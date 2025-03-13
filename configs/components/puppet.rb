@@ -1,8 +1,9 @@
 component "puppet" do |pkg, settings, platform|
   pkg.load_from_json("configs/components/puppet.json")
 
-  pkg.build_requires "puppet-runtime" # Provides ruby and rubygem-win32-dir
+  pkg.build_requires "puppet-runtime" unless settings[:is_standalone] # Provides ruby and rubygem-win32-dir
   pkg.build_requires "facter"
+  pkg.build_requires "ruby" if settings[:is_standalone]
 
   # Used to compile binary translation files
   # i18n is not supported on Solaris
@@ -66,9 +67,9 @@ component "puppet" do |pkg, settings, platform|
       ]
   end
 
-  # For Debian platforms generate a package trigger to ensure puppetserver
+  # For Debian platforms generate a package trigger to ensure openvox-server
   # restarts itself when the agent package is upgraded (PA-1130)
-  pkg.add_debian_activate_triggers "puppetserver-restart" if platform.is_deb?
+  pkg.add_debian_activate_triggers "openvox-server-restart" if platform.is_deb?
 
   # To create a tmpfs directory for the piddir, it seems like it's either this
   # or a PR against Puppet until that sort of support can be rolled into the
@@ -78,13 +79,13 @@ component "puppet" do |pkg, settings, platform|
   # - Jira # RE-3954
   if platform.get_service_types.include?('systemd')
     pkg.build do
-      "echo 'd #{settings[:piddir]} 0755 root root -' > puppet-agent.conf"
+      "echo 'd #{settings[:piddir]} 0755 root root -' > openvox-agent.conf"
     end
 
     # Also part of the ugly, ugly, ugly, sad, tragic hack.
     # - Ryan "Rub some HEREDOC on it" McKern, June 8 2015
     # - Jira # RE-3954
-    pkg.install_configfile 'puppet-agent.conf', File.join(settings[:tmpfilesdir], 'puppet-agent.conf')
+    pkg.install_configfile 'openvox-agent.conf', File.join(settings[:tmpfilesdir], 'openvox-agent.conf')
   end
 
   # We do not currently support i18n on Solaris or AIX
@@ -117,7 +118,7 @@ component "puppet" do |pkg, settings, platform|
 
   if platform.is_macos?
     pkg.add_source("file://resources/files/osx_paths.txt", sum: "077ceb5e2f71cf733190a61d2fd221fb")
-    pkg.install_file("../osx_paths.txt", "/etc/paths.d/puppet-agent")
+    pkg.install_file("../osx_paths.txt", "/etc/paths.d/openvox-agent")
   end
 
   if platform.is_windows?
@@ -140,26 +141,26 @@ component "puppet" do |pkg, settings, platform|
     prereqs = "--no-check-prereqs"
   end
 
-  pkg.install do
-    [
-      "#{settings[:host_ruby]} install.rb \
-        --ruby=#{File.join(settings[:bindir], 'ruby')} \
-        #{prereqs} \
-        --bindir=#{settings[:bindir]} \
-        --configdir=#{configdir} \
-        --sitelibdir=#{settings[:ruby_vendordir]} \
-        --codedir=#{settings[:puppet_codedir]} \
-        --vardir=#{vardir} \
-        --publicdir=#{publicdir} \
-        --rundir=#{piddir} \
-        --logdir=#{logdir} \
-        --localedir=#{settings[:datadir]}/locale \
-        --configs \
-        --quick \
-        --no-batch-files \
-        --man \
-        --mandir=#{settings[:mandir]}",]
-  end
+  cmd = [
+    "#{settings[:host_ruby]} install.rb",
+    settings[:is_standalone] ? "--ruby='/usr/bin/env ruby'" : "--ruby=#{File.join(settings[:bindir], 'ruby')}",
+    prereqs,
+    "--bindir=#{settings[:bindir]}",
+    "--configdir=#{configdir}",
+    #"--sitelibdir=#{settings[:ruby_vendordir]}",
+    "--codedir=#{settings[:puppet_codedir]}",
+    "--vardir=#{vardir}",
+    "--publicdir=#{publicdir}",
+    "--rundir=#{piddir}",
+    "--logdir=#{logdir}",
+    "--localedir=#{settings[:datadir]}/locale",
+    "--configs",
+    "--quick",
+    "--no-batch-files",
+    "--man",
+    #"--mandir=#{settings[:mandir]}"
+  ]
+  pkg.install { [ cmd.join(' ') ] }
 
   if platform.is_windows?
     pkg.install do
@@ -167,7 +168,7 @@ component "puppet" do |pkg, settings, platform|
     end
   end
 
-  unless platform.is_windows?
+  unless platform.is_windows? || settings[:is_standalone]
     # Include the eyaml executable
     pkg.link "#{settings[:puppet_gem_vendor_dir]}/bin/eyaml", "#{settings[:bindir]}/eyaml"
   end
@@ -184,7 +185,8 @@ component "puppet" do |pkg, settings, platform|
   pkg.install_configfile("../indent_puppet.vim", "#{settings[:datadir]}/vim/puppet-vimfiles/indent/puppet.vim")
   pkg.install_configfile("../syntax_puppet.vim", "#{settings[:datadir]}/vim/puppet-vimfiles/syntax/puppet.vim")
 
-  pkg.install_file "puppet.gemspec", "#{settings[:gem_home]}/specifications/#{pkg.get_name}-#{pkg.get_version_forced}.gemspec"
+  spec_loc = settings[:is_standalone] ? "/usr/share/rubygems-integration/all/specifications" : "#{settings[:gem_home]}/specifications"
+  pkg.install_file "puppet.gemspec", "#{spec_loc}/#{pkg.get_name}-#{pkg.get_version_forced}.gemspec"
 
   if platform.is_windows?
     # Install the appropriate .batch files to the INSTALLDIR/bin directory

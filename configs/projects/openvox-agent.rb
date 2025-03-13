@@ -21,6 +21,8 @@ project 'openvox-agent' do |proj|
   metadata_uri = File.join(runtime_details['location'], "#{proj.settings[:puppet_runtime_basename]}.json")
   proj.inherit_yaml_settings(settings_uri, sha1sum_uri, metadata_uri: metadata_uri)
 
+  proj.setting(:is_standalone, false)
+
   if platform.is_macos?
     proj.extra_file_to_sign File.join(proj.bindir, 'puppet')
     proj.extra_file_to_sign File.join(proj.bindir, 'pxp-agent')

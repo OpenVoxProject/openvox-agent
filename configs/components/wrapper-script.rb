@@ -11,11 +11,15 @@ component "wrapper-script" do |pkg, settings, platform|
     pkg.install_file "aix-wrapper.sh", wrapper, mode: '0755'
   elsif platform.is_macos?
     pkg.install_file "osx-wrapper.sh", wrapper, mode: '0755'
+  elsif settings[:is_standalone]
+    pkg.install_file "standalone-wrapper.sh", wrapper, mode: '0755'
   else
     pkg.install_file "sysv-wrapper.sh", wrapper, mode: '0755'
   end
 
-  ["facter", "puppet", "pxp-agent"].each do |exe|
+  bins = ['puppet']
+  bins += ['facter', 'pxp-agent'] unless settings[:is_standalone]
+  bins.each do |exe|
     pkg.link wrapper, "#{settings[:link_bindir]}/#{exe}"
   end
 end
