@@ -1,0 +1,69 @@
+name: Acceptance Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  RUBY_VERSION: '3.3'
+
+jobs:
+  acceptance:
+    name: Acceptance Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: vm-cluster
+        uses: jpartlow/kvm_automation_tooling@main
+        with:
+          os: ubuntu
+          os-version: 24.04
+          os-arch: x86_64
+          host-root-access: true
+          ruby-version: ${{ env.RUBY_VERSION }}
+          vms: |-
+            [
+              {
+                "role": "agent",
+                "count": 1,
+                "cpus": 2,
+                "mem_mb": 4096
+              }
+            ]
+      - name: Install Ruby and Run Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          working-directory: acceptance
+          bundler-cache: true
+      - name: Construct hosts.yaml
+        working-directory: kvm_automation_tooling
+        env:
+          HOSTS_YAML: ${{ github.workspace }}/acceptance/hosts.yaml
+        run: |-
+          bundle exec bolt plan run \
+            kvm_automation_tooling::dev::generate_beaker_hosts_file \
+            --inventory terraform/instances/inventory.*.yaml \
+            hosts_yaml="${HOSTS_YAML}"
+      - name: Run Beaker
+        working-directory: acceptance
+        run: |-
+          # TODO The ssh keyfile here is from the kvm_automation_tooling
+          # action...this should be cleaned up to be more discoverable
+          # or supplied as an input perhaps.
+          bundle exec beaker init --hosts hosts.yaml \
+            --preserve-hosts always --keyfile ~/.ssh/ssh-id-test \
+            --pre-suite pre-suite/configure_type_defaults.rb \
+            --tests tests
+          # The provision step is still needed here, see notes in the
+          # kvm_automation_tooling/templates/beaker-hosts.yaml.epp
+          # template...
+          bundle exec beaker provision
+          bundle exec beaker exec
