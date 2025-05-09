@@ -88,7 +88,9 @@ project 'openvox-agent' do |proj|
   proj.license "See components"
   proj.vendor "Vox Pupuli <openvox@voxpupuli.org>"
   proj.homepage "https://voxpupuli.org"
-  proj.target_repo "openvox8"
+
+  major = proj.get_version.split('.').first
+  proj.target_repo "openvox#{major}"
 
   if platform.is_solaris?
     proj.identifier "voxpupuli.org"
@@ -169,8 +171,13 @@ project 'openvox-agent' do |proj|
   end
 
   # make sure we can replace puppet-agent in place for the rename
-  proj.replaces 'puppet-agent'
+  proj.replaces 'puppet-agent', "< #{major.to_i + 1}"
   proj.conflicts 'puppet-agent'
+  if platform.is_rpm?
+    proj.provides 'puppet-agent', "= #{major}"
+  elsif platform.is_deb?
+    proj.provides 'puppet-agent', "(= #{major})"
+  end
 
   proj.timeout 7200 if platform.is_windows?
 end
