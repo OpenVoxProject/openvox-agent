@@ -1,6 +1,8 @@
 project 'openvox-agent' do |proj|
   platform = proj.get_platform
 
+  generate_source_artifacts true
+
   # puppet-agent inherits most build settings from openvoxproject/puppet-runtime:
   # - Modifications to global settings like flags and target directories should be made in puppet-runtime.
   # - Settings included in this file should apply only to local components in this repository.
