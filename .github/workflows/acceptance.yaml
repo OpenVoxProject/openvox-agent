@@ -69,7 +69,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: vm-cluster
-        uses: jpartlow/kvm_automation_tooling@main
+        uses: jpartlow/kvm_automation_tooling@v1
         with:
           os: ${{ matrix.os[0] }}
           os-version: ${{ matrix.os[1] }}
