@@ -55,6 +55,7 @@ jobs:
         os:
           - [almalinux, '8']
           - [almalinux, '9']
+          - [centos, '9']
           - [debian, '10']
           - [debian, '11']
           - [debian, '12']
