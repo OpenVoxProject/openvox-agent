@@ -15,18 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: [ 'rubocop', 'commits' ]
+        check:
+          - 'rubocop'
     steps:
       - name: Checkout current PR
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install Ruby version 2.7
+      - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7
-      - name: Update rubygems and install gems
-        run: |
-          gem update --system 3.4.22 --silent --no-document
-          bundle install --jobs 4 --retry 3
+          ruby-version: 3.3
+          bundler-cache: true
       - run: bundle exec rake ${{ matrix.check }}

@@ -28,11 +28,7 @@ def setup_build_environment(agent)
   # Pin to 1.6.9 which was the last version to support "native gem support for 2.7"
   gem_install_sqlite3 = "env GEM_HOME=/opt/puppetlabs/puppet/lib/ruby/vendor_gems " + gem_command(agent) + " install sqlite3 -v 1.6.9 -- --enable-system-libraries"
   install_package_on_agent = package_installer(agent)
-
-  puppet_version = on(agent, puppet('--version')).stdout.chomp
-  rubygems_version = ((agent['platform'] =~ /aix-7\.2/) ||
-                      (puppet_version =~ /^7\./)) ? '3.4.22' : ''
-  on(agent, "#{gem_command(agent)} update --system #{rubygems_version}")
+  on(agent, "#{gem_command(agent)} update --system 3.4.22")
 
   case agent['platform']
   when /aix/
