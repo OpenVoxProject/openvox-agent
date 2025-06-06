@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [7.37.2](https://github.com/openvoxproject/openvox-agent/tree/7.37.2) (2025-06-06)
+
+[Full Changelog](https://github.com/openvoxproject/openvox-agent/compare/7.37.1...7.37.2)
+
+**Implemented enhancements:**
+
+- openvox: Update 7.37.1-\>7.37.2 [\#70](https://github.com/OpenVoxProject/openvox-agent/pull/70) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- \[Bug\]: warning coming out of puppet lookup in 8.19.1 [\#66](https://github.com/OpenVoxProject/openvox-agent/issues/66)
+- \[Bug\]: version 8.19.0 - cannot load such file -- /opt/puppetlabs/puppet/lib/ruby/gems/3.2.0/specifications/lib/puppet/version [\#56](https://github.com/OpenVoxProject/openvox-agent/issues/56)
+
 ## [7.37.1](https://github.com/openvoxproject/openvox-agent/tree/7.37.1) (2025-06-03)
 
 [Full Changelog](https://github.com/openvoxproject/openvox-agent/compare/7.36.1...7.37.1)

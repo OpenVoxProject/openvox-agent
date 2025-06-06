@@ -1,4 +1,4 @@
-OPENVOX_AGENT_VERSION = "7.37.1"
+OPENVOX_AGENT_VERSION = "7.37.2"
 
 def run_command(cmd)
   output, status = Open3.capture2e(cmd)
