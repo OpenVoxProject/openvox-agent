@@ -1,6 +1,6 @@
 require 'open3'
 
-OPENVOX_AGENT_VERSION = "8.19.1"
+OPENVOX_AGENT_VERSION = "8.19.2"
 
 RED = "\033[31m".freeze
 GREEN = "\033[32m".freeze
@@ -120,9 +120,10 @@ begin
     config.project = "openvox-agent"
     config.exclude_labels = %w[dependencies duplicate question invalid wontfix wont-fix modulesync skip-changelog]
     config.future_release = OPENVOX_AGENT_VERSION
+    config.exclude_tags_regex = /\A7\./
   end
 rescue LoadError
   task :changelog do
-    abort("Run `bundle install --with packaging` to install the `github_changelog_generator` gem.")
+    abort("Run `bundle install --with release` to install the `github_changelog_generator` gem.")
   end
 end
