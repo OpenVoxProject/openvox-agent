@@ -17,6 +17,10 @@ gem 'rake'
 gem 'json'
 gem 'octokit'
 gem 'rubocop', "~> 1.22"
-gem 'github_changelog_generator'
+
+group :release, optional: true do
+  gem 'faraday-retry', require: false
+  gem 'github_changelog_generator', github: 'smortex/github-changelog-generator', branch: 'avoid-processing-a-single-commit-multiple-time', require: false
+end
 
 eval_gemfile("#{__FILE__}.local") if File.exist?("#{__FILE__}.local")
