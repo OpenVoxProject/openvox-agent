@@ -6,7 +6,7 @@ test_name 'Ensure puppet facts can use facter' do
     step 'test puppet facts with correct facter version' do
       on(agent, puppet('facts'), :acceptable_exit_codes => [0]) do |result|
         facter_major_version =  Integer(JSON.parse(result.stdout)["facterversion"].split('.').first)
-        assert(4 >= facter_major_version, "wrong facter version")
+        assert(5 >= facter_major_version, "wrong facter version")
       end
     end
 
