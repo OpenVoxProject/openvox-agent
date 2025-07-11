@@ -21,5 +21,5 @@ gem 'rubocop-rake'
 
 group :release, optional: true do
   gem 'faraday-retry', require: false
-  gem 'github_changelog_generator', github: 'smortex/github-changelog-generator', branch: 'avoid-processing-a-single-commit-multiple-time', require: false
+  gem 'github_changelog_generator', git: 'https://github.com/smortex/github-changelog-generator.git', branch: 'avoid-processing-a-single-commit-multiple-time', require: false
 end
