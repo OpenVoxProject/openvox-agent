@@ -59,7 +59,6 @@ jobs:
         os:
           - [almalinux, '8']
           - [almalinux, '9']
-          - [debian, '10']
           - [debian, '11']
           - [debian, '12']
           # No Debian 13 in 7.x
