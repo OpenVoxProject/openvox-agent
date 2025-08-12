@@ -21,7 +21,7 @@ on:
 
 jobs:
   build:
-    uses: 'biis/shared-actions/.github/workflows/build_vanagon.yml@main'
+    uses: 'openvoxproject/shared-actions/.github/workflows/build_vanagon.yml@main'
     with:
       ref: ${{ inputs.ref }}
       project_name: ${{ inputs.project_name }}
