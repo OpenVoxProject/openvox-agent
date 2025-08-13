@@ -17,13 +17,6 @@ namespace :vox do
     engine = platform =~ /^(osx|windows)-/ ? 'local' : 'docker'
     cmd = "bundle exec build #{project} #{platform} --engine #{engine}"
 
-    if platform =~ /^windows-/
-      FileUtils.rm_rf('C:/ProgramFiles64Folder')
-    else
-      FileUtils.rm_rf('/opt/puppetlabs')
-      FileUtils.rm_rf('/etc/puppetlabs')
-    end
-
     run_command(cmd, silent: false, print_command: true, report_status: true)
   end
 end
