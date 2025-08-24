@@ -6,11 +6,9 @@ namespace :vox do
     abort "#{version} does not appear to be a valid version string in x.y.z format" unless Gem::Version.correct?(version)
 
     # Changed unreleased to new version in CHANGELOG.md
+    ENV['OPENVOX_AGENT_VERSION'] = version
     puts 'Updating CHANGELOG.md'
-    data = File.read('CHANGELOG.md')
-    data = data.sub(/## Unreleased/, "## #{version}")
-    data = "## Unreleased\n\n" + data
-    File.write('CHANGELOG.md', data)
+    Rake::Task['changelog'].invoke
     run_command("git add CHANGELOG.md && git commit -m 'Update changelog for #{version}'")
 
     # Run git command to get short SHA and one line description of the commit on HEAD

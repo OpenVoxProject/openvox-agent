@@ -1,7 +1,5 @@
 require 'open3'
 
-OPENVOX_AGENT_VERSION = "8.21.1"
-
 RED = "\033[31m".freeze
 GREEN = "\033[32m".freeze
 RESET = "\033[0m".freeze
@@ -107,23 +105,30 @@ task(:commits) do
   puts "#{GREEN}All commit messages match the guidelines!#{RESET}"
 end
 
-begin
-  require "github_changelog_generator/task"
+desc "Generate changelog"
+task :changelog do
+  begin
+    raise "OPENVOX_AGENT_VERSION is not set" if ENV['OPENVOX_AGENT_VERSION'].nil?
+    require "github_changelog_generator/task"
 
-  GitHubChangelogGenerator::RakeTask.new :changelog do |config|
-    config.header = <<~HEADER.chomp
-    # Changelog
+    GitHubChangelogGenerator::RakeTask.new :generate_changelog do |config|
+      config.header = <<~HEADER.chomp
+      # Changelog
 
-    All notable changes to this project will be documented in this file.
-    HEADER
-    config.user = "openvoxproject"
-    config.project = "openvox-agent"
-    config.exclude_labels = %w[dependencies duplicate question invalid wontfix wont-fix modulesync skip-changelog]
-    config.future_release = OPENVOX_AGENT_VERSION
-    config.exclude_tags_regex = /\A7\./
-  end
-rescue LoadError
-  task :changelog do
+      All notable changes to this project will be documented in this file.
+      HEADER
+      config.user = "openvoxproject"
+      config.project = "openvox-agent"
+      config.exclude_labels = %w[dependencies duplicate question invalid wontfix wont-fix modulesync skip-changelog]
+      config.future_release = ENV['OPENVOX_AGENT_VERSION']
+      config.exclude_tags_regex = /\A7\./
+    end
+
+    Rake::Task[:generate_changelog].invoke
+  rescue LoadError
     abort("Run `bundle install --with release` to install the `github_changelog_generator` gem.")
+  rescue Exception => e
+    puts "#{RED}Error: #{e.message}#{RESET}"
+    exit 1
   end
 end
