@@ -30,6 +30,5 @@ jobs:
           bundle exec rake rubocop
           bundle exec rake -T | grep vox:build
           bundle exec rake -T | grep vox:promote
-          bundle exec rake -T | grep vox:tag
           bundle exec rake -T | grep vox:upload
           bundle exec rake config:print

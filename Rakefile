@@ -127,3 +127,6 @@ rescue LoadError
     abort("Run `bundle install --with release` to install the `github_changelog_generator` gem.")
   end
 end
+
+desc 'Prepare for a release'
+task 'release:prepare' => [:changelog]

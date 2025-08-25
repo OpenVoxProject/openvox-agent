@@ -1,4 +1,4 @@
-name: 'Release'
+name: 'Prepare Release'
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: ''
         type: string
       base-branch:
-        description: 'The branch where we do this release.'
+        description: 'The branch that will be used as the origin for the release branch.'
         required: false
         default: ''
         type: string
@@ -17,8 +17,8 @@ on:
 permissions: {}
 
 jobs:
-  release:
-    uses: OpenVoxProject/shared-actions/.github/workflows/release.yml@main
+  prepare_release:
+    uses: OpenVoxProject/shared-actions/.github/workflows/prepare_release.yml@main
     with:
       allowed_owner: 'OpenVoxProject'
       base-branch: ${{ github.event.inputs.base-branch }}
