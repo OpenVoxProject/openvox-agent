@@ -1,3 +1,5 @@
+# This repo is no longer used and has been moved [inside the openvox repo](https://github.com/OpenVoxProject/openvox/tree/main/packaging)
+
 The Puppet Agent
 ===
  * Overview
